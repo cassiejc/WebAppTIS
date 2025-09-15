@@ -16,44 +16,6 @@
             z-index: 3;
         }
         .currency-input { padding-left: 35px !important; }
-        
-        /* Optimized loading overlay styles */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        }
-        
-        .loading-content {
-            background: white;
-            padding: 25px 35px;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            max-width: 300px;
-        }
-        
-        .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #007bff;
-            border-radius: 50%;
-            width: 32px;
-            height: 32px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
 
         .location-status {
             position: fixed;
@@ -79,15 +41,6 @@
     </style>
 </head>
 <body class="bg-light">
-    <!-- Optimized Loading Overlay -->
-    <div id="loadingOverlay" class="loading-overlay">
-        <div class="loading-content">
-            <div class="spinner"></div>
-            <h6 class="mb-2">Mengambil Lokasi...</h6>
-            <small class="text-muted">Pastikan GPS aktif</small>
-        </div>
-    </div>
-
     <!-- Location Status Alert -->
     <div id="locationStatus" class="location-status"></div>
 
@@ -362,14 +315,6 @@
                 }
             },
 
-            showLoadingOverlay() {
-                document.getElementById('loadingOverlay').style.display = 'flex';
-            },
-
-            hideLoadingOverlay() {
-                document.getElementById('loadingOverlay').style.display = 'none';
-            },
-
             showLocationStatus(message, type = 'info') {
                 const statusDiv = document.getElementById('locationStatus');
                 const alertClass = type === 'success' ? 'alert-success' : 
@@ -466,72 +411,67 @@
             }
         });
 
-        // Optimized form submission
         // Optimized form submission - Location is MANDATORY
-document.getElementById('visitingForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    const submitBtn = document.getElementById('submitBtn');
-    const btnText = submitBtn.querySelector('.btn-text');
-    const spinner = submitBtn.querySelector('.spinner-border');
-    
-    // Show loading state on button
-    submitBtn.classList.add('loading');
-    btnText.textContent = 'Memproses...';
-    spinner.classList.remove('d-none');
-    
-    try {
-        AutoLocationManager.showLoadingOverlay();
-        AutoLocationManager.clearLocationStatus();
-        
-        // Get current location (will use cache if available)
-        const location = await AutoLocationManager.getCurrentLocation();
-        
-        // Update hidden inputs
-        document.getElementById('userLatitude').value = location.lat;
-        document.getElementById('userLongitude').value = location.lon;
-        
-        // Get address - this is required too
-        const address = await AutoLocationManager.getAddressFromCoords(location.lat, location.lon);
-        document.getElementById('userAddress').value = address;
-        
-        // Process currency fields
-        document.querySelectorAll('.currency-field').forEach(input => {
-            if (input.value) {
-                input.value = CurrencyUtils.removeCurrencyFormat(input.value);
+        document.getElementById('visitingForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const btnText = submitBtn.querySelector('.btn-text');
+            const spinner = submitBtn.querySelector('.spinner-border');
+            
+            // Show loading state on button
+            submitBtn.classList.add('loading');
+            btnText.textContent = 'Memproses...';
+            spinner.classList.remove('d-none');
+            
+            try {
+                AutoLocationManager.clearLocationStatus();
+                
+                // Get current location (will use cache if available)
+                const location = await AutoLocationManager.getCurrentLocation();
+                
+                // Update hidden inputs
+                document.getElementById('userLatitude').value = location.lat;
+                document.getElementById('userLongitude').value = location.lon;
+                
+                // Get address - this is required too
+                const address = await AutoLocationManager.getAddressFromCoords(location.lat, location.lon);
+                document.getElementById('userAddress').value = address;
+                
+                // Process currency fields
+                document.querySelectorAll('.currency-field').forEach(input => {
+                    if (input.value) {
+                        input.value = CurrencyUtils.removeCurrencyFormat(input.value);
+                    }
+                });
+                
+                // Submit the form only if we have location data
+                if (document.getElementById('userLatitude').value && 
+                    document.getElementById('userLongitude').value) {
+                    this.submit();
+                } else {
+                    throw new Error('Data lokasi tidak tersedia');
+                }
+                
+            } catch (error) {
+                AutoLocationManager.showLocationStatus(`Gagal: ${error.message}`, 'error');
+                
+                // Reset button state
+                submitBtn.classList.remove('loading');
+                btnText.textContent = '<?php echo ($action_type === 'next') ? 'Next' : 'Submit'; ?>';
+                spinner.classList.add('d-none');
+                
+                // Show error message - no option to continue without location
+                alert(
+                    `Gagal mengambil lokasi: ${error.message}\n\n` +
+                    'Data lokasi diperlukan untuk melanjutkan. Silakan:\n' +
+                    '1. Pastikan GPS/lokasi aktif\n' +
+                    '2. Izinkan akses lokasi pada browser\n' +
+                    '3. Pastikan koneksi internet stabil\n' +
+                    '4. Coba lagi'
+                );
             }
         });
-        
-        AutoLocationManager.hideLoadingOverlay();
-        
-        // Submit the form only if we have location data
-        if (document.getElementById('userLatitude').value && 
-            document.getElementById('userLongitude').value) {
-            this.submit();
-        } else {
-            throw new Error('Data lokasi tidak tersedia');
-        }
-        
-    } catch (error) {
-        AutoLocationManager.hideLoadingOverlay();
-        AutoLocationManager.showLocationStatus(`Gagal: ${error.message}`, 'error');
-        
-        // Reset button state
-        submitBtn.classList.remove('loading');
-        btnText.textContent = '<?php echo ($action_type === 'next') ? 'Next' : 'Submit'; ?>';
-        spinner.classList.add('d-none');
-        
-        // Show error message - no option to continue without location
-        alert(
-            `Gagal mengambil lokasi: ${error.message}\n\n` +
-            'Data lokasi diperlukan untuk melanjutkan. Silakan:\n' +
-            '1. Pastikan GPS/lokasi aktif\n' +
-            '2. Izinkan akses lokasi pada browser\n' +
-            '3. Pastikan koneksi internet stabil\n' +
-            '4. Coba lagi'
-        );
-    }
-});
 
         // Existing form logic for jenis kasus (unchanged)
         const JENIS_KASUS_MAPPING = {
