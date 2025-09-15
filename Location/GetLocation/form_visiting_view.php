@@ -57,7 +57,7 @@
 
         .location-status {
             position: fixed;
-            top: 20px;
+            top: 80px;
             right: 20px;
             z-index: 1000;
             min-width: 200px;
@@ -268,7 +268,7 @@
                     }
 
                     // Show status
-                    this.showLocationStatus('Mengambil lokasi GPS...', 'info');
+                    // this.showLocationStatus('Mengambil lokasi GPS...', 'info');
 
                     const location = await new Promise((resolve, reject) => {
                         const timeoutId = setTimeout(() => {
@@ -315,7 +315,7 @@
                         );
                     });
 
-                    this.showLocationStatus('Lokasi berhasil diambil!', 'success');
+                    // this.showLocationStatus('Lokasi berhasil diambil!', 'success');
                     return location;
 
                 } finally {
@@ -325,7 +325,7 @@
 
             async getAddressFromCoords(lat, lon) {
                 try {
-                    this.showLocationStatus('Mengambil alamat...', 'info');
+                    // this.showLocationStatus('Mengambil alamat...', 'info');
                     
                     // Set timeout for address fetching
                     const controller = new AbortController();
@@ -349,7 +349,7 @@
                     const data = await response.json();
                     
                     if (data && data.display_name) {
-                        this.showLocationStatus('Alamat berhasil diambil!', 'success');
+                        // this.showLocationStatus('Alamat berhasil diambil!', 'success');
                         return data.display_name;
                     }
                     
@@ -467,90 +467,71 @@
         });
 
         // Optimized form submission
-        document.getElementById('visitingForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const submitBtn = document.getElementById('submitBtn');
-            const btnText = submitBtn.querySelector('.btn-text');
-            const spinner = submitBtn.querySelector('.spinner-border');
-            
-            // Show loading state on button
-            submitBtn.classList.add('loading');
-            btnText.textContent = 'Memproses...';
-            spinner.classList.remove('d-none');
-            
-            try {
-                AutoLocationManager.showLoadingOverlay();
-                AutoLocationManager.clearLocationStatus();
-                
-                // Get current location (will use cache if available)
-                const location = await AutoLocationManager.getCurrentLocation();
-                
-                // Update hidden inputs
-                document.getElementById('userLatitude').value = location.lat;
-                document.getElementById('userLongitude').value = location.lon;
-                
-                // Get address in parallel with form processing
-                const addressPromise = AutoLocationManager.getAddressFromCoords(location.lat, location.lon);
-                
-                // Process currency fields
-                document.querySelectorAll('.currency-field').forEach(input => {
-                    if (input.value) {
-                        input.value = CurrencyUtils.removeCurrencyFormat(input.value);
-                    }
-                });
-                
-                // Wait for address (with timeout)
-                try {
-                    const address = await Promise.race([
-                        addressPromise,
-                        new Promise((_, reject) => setTimeout(() => reject(new Error('Address timeout')), 3000))
-                    ]);
-                    document.getElementById('userAddress').value = address;
-                } catch (addressError) {
-                    // Continue without address if it fails
-                    console.warn('Address fetch failed:', addressError.message);
-                    document.getElementById('userAddress').value = `Koordinat: ${location.lat.toFixed(6)}, ${location.lon.toFixed(6)}`;
-                }
-                
-                AutoLocationManager.hideLoadingOverlay();
-                
-                // Submit the form
-                this.submit();
-                
-            } catch (error) {
-                AutoLocationManager.hideLoadingOverlay();
-                AutoLocationManager.showLocationStatus(`Gagal: ${error.message}`, 'error');
-                
-                // Reset button state
-                submitBtn.classList.remove('loading');
-                btnText.textContent = '<?php echo ($action_type === 'next') ? 'Next' : 'Submit'; ?>';
-                spinner.classList.add('d-none');
-                
-                // Ask if user wants to continue without location
-                const continueWithoutLocation = confirm(
-                    `Gagal mengambil lokasi: ${error.message}\n\n` +
-                    'Apakah Anda ingin melanjutkan tanpa data lokasi?'
-                );
-                
-                if (continueWithoutLocation) {
-                    // Show loading again
-                    submitBtn.classList.add('loading');
-                    btnText.textContent = 'Memproses...';
-                    spinner.classList.remove('d-none');
-                    
-                    // Process currency fields
-                    document.querySelectorAll('.currency-field').forEach(input => {
-                        if (input.value) {
-                            input.value = CurrencyUtils.removeCurrencyFormat(input.value);
-                        }
-                    });
-                    
-                    // Submit without location
-                    this.submit();
-                }
+        // Optimized form submission - Location is MANDATORY
+document.getElementById('visitingForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const submitBtn = document.getElementById('submitBtn');
+    const btnText = submitBtn.querySelector('.btn-text');
+    const spinner = submitBtn.querySelector('.spinner-border');
+    
+    // Show loading state on button
+    submitBtn.classList.add('loading');
+    btnText.textContent = 'Memproses...';
+    spinner.classList.remove('d-none');
+    
+    try {
+        AutoLocationManager.showLoadingOverlay();
+        AutoLocationManager.clearLocationStatus();
+        
+        // Get current location (will use cache if available)
+        const location = await AutoLocationManager.getCurrentLocation();
+        
+        // Update hidden inputs
+        document.getElementById('userLatitude').value = location.lat;
+        document.getElementById('userLongitude').value = location.lon;
+        
+        // Get address - this is required too
+        const address = await AutoLocationManager.getAddressFromCoords(location.lat, location.lon);
+        document.getElementById('userAddress').value = address;
+        
+        // Process currency fields
+        document.querySelectorAll('.currency-field').forEach(input => {
+            if (input.value) {
+                input.value = CurrencyUtils.removeCurrencyFormat(input.value);
             }
         });
+        
+        AutoLocationManager.hideLoadingOverlay();
+        
+        // Submit the form only if we have location data
+        if (document.getElementById('userLatitude').value && 
+            document.getElementById('userLongitude').value) {
+            this.submit();
+        } else {
+            throw new Error('Data lokasi tidak tersedia');
+        }
+        
+    } catch (error) {
+        AutoLocationManager.hideLoadingOverlay();
+        AutoLocationManager.showLocationStatus(`Gagal: ${error.message}`, 'error');
+        
+        // Reset button state
+        submitBtn.classList.remove('loading');
+        btnText.textContent = '<?php echo ($action_type === 'next') ? 'Next' : 'Submit'; ?>';
+        spinner.classList.add('d-none');
+        
+        // Show error message - no option to continue without location
+        alert(
+            `Gagal mengambil lokasi: ${error.message}\n\n` +
+            'Data lokasi diperlukan untuk melanjutkan. Silakan:\n' +
+            '1. Pastikan GPS/lokasi aktif\n' +
+            '2. Izinkan akses lokasi pada browser\n' +
+            '3. Pastikan koneksi internet stabil\n' +
+            '4. Coba lagi'
+        );
+    }
+});
 
         // Existing form logic for jenis kasus (unchanged)
         const JENIS_KASUS_MAPPING = {
