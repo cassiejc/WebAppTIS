@@ -227,26 +227,61 @@ class Tambah_Data_Baru_Master_Controller extends CI_Controller {
                 break;
             }
         }
+
+        $tipe_ternak_pakan = null;
+        if ($kategori == 'Pakan') {
+            foreach ($questions_kategori as $q_check) {
+                if ($q_check['field_name'] == 'tipe_ternak') {
+                    $input_name_check = 'q' . $q_check['questions_id'];
+                    $tipe_ternak_pakan = $this->input->post($input_name_check);
+                    break;
+                }
+            }
+        }
         
         // Process each question
         foreach ($questions_kategori as $q) {
             $field = $q['field_name'];
             $input_name = 'q' . $q['questions_id'];
             $jawaban = $this->input->post($input_name);
-            
+
             // Validate required fields
-            $should_be_required = false;
-            if (!empty($q['required'])) {
-                if (in_array($field, ['agen_dari', 'sub_agen_dari', 'kemitraan_dari'])) {
-                    if (($field == 'agen_dari' && $jenis_peternak == 'Agen') ||
-                        ($field == 'sub_agen_dari' && $jenis_peternak == 'Sub Agen') ||
-                        ($field == 'kemitraan_dari' && $jenis_peternak == 'Kemitraan')) {
-                        $should_be_required = true;
-                    }
-                } else {
+        $should_be_required = false;
+        if (!empty($q['required'])) {
+            // Logika khusus untuk Pakan -> pilihan_pakan
+            if ($kategori === 'Pakan' && $field === 'pilihan_pakan') {
+                // Hanya wajib jika tipe ternak adalah 'Layer'
+                if ($tipe_ternak_pakan === 'Layer') {
                     $should_be_required = true;
                 }
+            } 
+            // Logika khusus untuk Peternak
+            elseif (in_array($field, ['agen_dari', 'sub_agen_dari', 'kemitraan_dari'])) {
+                if (($field == 'agen_dari' && $jenis_peternak == 'Agen') ||
+                    ($field == 'sub_agen_dari' && $jenis_peternak == 'Sub Agen') ||
+                    ($field == 'kemitraan_dari' && $jenis_peternak == 'Kemitraan')) {
+                    $should_be_required = true;
+                }
+            } 
+            // Logika default untuk field wajib lainnya
+            else {
+                $should_be_required = true;
             }
+        }
+                    
+            // Validate required fields
+            // $should_be_required = false;
+            // if (!empty($q['required'])) {
+            //     if (in_array($field, ['agen_dari', 'sub_agen_dari', 'kemitraan_dari'])) {
+            //         if (($field == 'agen_dari' && $jenis_peternak == 'Agen') ||
+            //             ($field == 'sub_agen_dari' && $jenis_peternak == 'Sub Agen') ||
+            //             ($field == 'kemitraan_dari' && $jenis_peternak == 'Kemitraan')) {
+            //             $should_be_required = true;
+            //         }
+            //     } else {
+            //         $should_be_required = true;
+            //     }
+            // }
             
             if ($should_be_required && ($jawaban === '' || is_null($jawaban))) {
                 $this->session->set_flashdata('error', 'Mohon isi semua field yang wajib diisi');
@@ -467,8 +502,8 @@ class Tambah_Data_Baru_Master_Controller extends CI_Controller {
                 $options_data = [
                     'questions_id' => $question['questions_id'],
                     'option_text'  => $save_data['nama_pakan'],
-                    'tipe_ternak'  => $save_data['tipe_ternak'],
-                    'pilihan_pakan' => isset($save_data['pilihan_pakan']) ? $save_data['pilihan_pakan'] : null
+                    'tipe_ternak'  => $save_data['tipe_ternak']
+                    // 'pilihan_pakan' => isset($save_data['pilihan_pakan']) ? $save_data['pilihan_pakan'] : null
                 ];
 
                 // langsung insert tanpa cek duplikat
