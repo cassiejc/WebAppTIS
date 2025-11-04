@@ -582,7 +582,12 @@
         width: 100%;
     }
 
-     #areaPerformanceBody tr.row-selected {
+     /* --- GANTI BAGIAN INI --- */
+
+    /* [BARU] Aturan highlight yang berbeda untuk setiap tabel */
+    /* (Menyesuaikan warna ikon di judul card) */
+    
+    #areaPerformanceBody tr.row-selected {
         background-color: #fff3cd !important; /* Kuning cerah untuk Area */
         transform: translateX(5px) !important;
         box-shadow: 0 4px 12px rgba(243, 156, 18, 0.3) !important;
@@ -609,6 +614,8 @@
     #compositionVisitBody tr.row-selected:hover {
         opacity: 0.95;
     }
+    
+    /* --- AKHIR DARI PERUBAHAN --- */
     
 </style>
 
@@ -874,9 +881,9 @@ document.addEventListener('DOMContentLoaded', function () {
             if(resetLogBtn) resetLogBtn.style.display = 'inline-block';
             
             // 4. Hapus highlight surveyor (karena filter surveyor tidak lagi relevan)
-            if (surveyorTableBody) {
-                surveyorTableBody.querySelectorAll('.surveyor-row').forEach(r => r.classList.remove('row-selected'));
-            }
+            // if (surveyorTableBody) {
+            //     surveyorTableBody.querySelectorAll('.surveyor-row').forEach(r => r.classList.remove('row-selected'));
+            // }
         });
     }
 
@@ -1004,13 +1011,13 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         
         // Hapus highlight composition
-        if(compositionTableBody) {
-            compositionTableBody.querySelectorAll('.composition-row').forEach(r => r.classList.remove('row-selected'));
-        }
+        // if(compositionTableBody) {
+        //     compositionTableBody.querySelectorAll('.composition-row').forEach(r => r.classList.remove('row-selected'));
+        // }
 
-        if(areaTableBody) {
-            areaTableBody.querySelectorAll('.area-row').forEach(r => r.classList.remove('row-selected'));
-        }
+        // if(areaTableBody) {
+        //     areaTableBody.querySelectorAll('.area-row').forEach(r => r.classList.remove('row-selected'));
+        // }
     }
     
     // --- [BARU] (HELPER) Filter Tabel Log Berdasarkan Komposisi ---
@@ -1085,13 +1092,13 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         
         // Hapus highlight surveyor
-        if(surveyorTableBody) {
-            surveyorTableBody.querySelectorAll('.surveyor-row').forEach(r => r.classList.remove('row-selected'));
-        }
+        // if(surveyorTableBody) {
+        //     surveyorTableBody.querySelectorAll('.surveyor-row').forEach(r => r.classList.remove('row-selected'));
+        // }
 
-        if(areaTableBody) {
-            areaTableBody.querySelectorAll('.area-row').forEach(r => r.classList.remove('row-selected'));
-        }
+        // if(areaTableBody) {
+        //     areaTableBody.querySelectorAll('.area-row').forEach(r => r.classList.remove('row-selected'));
+        // }
     }
     
     // --- (HELPER) Update Tabel Komposisi ---
