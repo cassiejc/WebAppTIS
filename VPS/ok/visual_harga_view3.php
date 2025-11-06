@@ -10,12 +10,12 @@ function render_stat_block($title, $data, $color) {
         $harga_display = "Rp " . number_format($data['nilai_rata_rata'], 0, ',', '.');
     }
 ?>
-<div class="stat-block mb-3 bg-light p-2 rounded" style="border-left: 4px solid <?php echo $color; ?>;">
-    <div class="text-xs font-weight-bold mb-1" style="color: <?php echo $color; ?>;">
-        <?php echo $title; ?> </div>
+<div class="stat-block bg-light p-2 rounded" style="border-left: 4px solid <?php echo $color; ?>;">
+    <div class="text-xs font-weight-bold" style="color: <?php echo $color; ?>;">
+        <?php echo $title; ?>
+    </div>
     <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $harga_display; ?></div>
 </div>
-<hr class="mt-2 mb-3">
 <?php } 
 ?>
 
@@ -43,7 +43,13 @@ function render_stat_block($title, $data, $color) {
                         <h5 class="mb-0 font-weight-bold"><i class="fas fa-chart-line mr-2"></i>Grafik Bulanan: Telur Layer</h5>
                     </div>
                     <div class="card-body"> 
-                        <?php render_stat_block('Telur Layer', $latest_telur, '#007bff'); ?>
+                        <div class="d-flex align-items-center mb-2">
+                            <div style="width: 15%;">
+                                <?php render_stat_block('Telur Layer / Kg', $latest_telur, '#007bff'); ?>
+                            </div>
+                            <div id="legend-chartTelurLayer" class="chart-legend-container" style="flex-grow: 1;"></div>
+                        </div>
+                        
                         <div class="chart-container" style="height: 300px;">
                             <canvas id="chartTelurLayer"></canvas>
                         </div>
@@ -57,7 +63,13 @@ function render_stat_block($title, $data, $color) {
                         <h5 class="mb-0 font-weight-bold"><i class="fas fa-chart-line mr-2"></i>Grafik Bulanan: Telur Puyuh</h5>
                     </div>
                     <div class="card-body">
-                        <?php render_stat_block('Telur Puyuh', $latest_puyuh, '#17a2b8'); ?>
+                        <div class="d-flex align-items-center mb-2">
+                            <div style="width: 15%;">
+                                <?php render_stat_block('Telur Puyuh / Kg', $latest_puyuh, '#17a2b8'); ?>
+                            </div>
+                            <div id="legend-chartTelurPuyuh" class="chart-legend-container" style="flex-grow: 1;"></div>
+                        </div>
+                        
                         <div class="chart-container" style="height: 300px;">
                             <canvas id="chartTelurPuyuh"></canvas>
                         </div>
@@ -71,7 +83,13 @@ function render_stat_block($title, $data, $color) {
                         <h5 class="mb-0 font-weight-bold"><i class="fas fa-chart-line mr-2"></i>Grafik Bulanan: Telur Bebek</h5>
                     </div>
                     <div class="card-body">
-                        <?php render_stat_block('Telur Bebek', $latest_bebek, '#28a745'); ?>
+                        <div class="d-flex align-items-center mb-2">
+                            <div style="width: 15%;">
+                                <?php render_stat_block('Telur Bebek / Btr', $latest_bebek, '#28a745'); ?>
+                            </div>
+                            <div id="legend-chartTelurBebek" class="chart-legend-container" style="flex-grow: 1;"></div>
+                        </div>
+                        
                         <div class="chart-container" style="height: 300px;">
                             <canvas id="chartTelurBebek"></canvas>
                         </div>
@@ -85,7 +103,13 @@ function render_stat_block($title, $data, $color) {
                         <h5 class="mb-0 font-weight-bold"><i class="fas fa-chart-line mr-2"></i>Grafik Bulanan: Live Bird</h5>
                     </div>
                     <div class="card-body">
-                        <?php render_stat_block('Live Bird', $latest_lb, '#ffc107'); ?>
+                        <div class="d-flex align-items-center mb-2">
+                            <div style="width: 15%;">
+                                <?php render_stat_block('Live Bird / Kg', $latest_lb, '#ffc107'); ?>
+                            </div>
+                            <div id="legend-chartLiveBird" class="chart-legend-container" style="flex-grow: 1;"></div>
+                        </div>
+                        
                         <div class="chart-container" style="height: 300px;">
                             <canvas id="chartLiveBird"></canvas>
                         </div>
@@ -99,7 +123,13 @@ function render_stat_block($title, $data, $color) {
                         <h5 class="mb-0 font-weight-bold"><i class="fas fa-chart-line mr-2"></i>Grafik Bulanan: Afkir</h5>
                     </div>
                     <div class="card-body">
-                        <?php render_stat_block('Afkir', $latest_afkir, '#dc3545'); ?>
+                        <div class="d-flex align-items-center mb-2">
+                            <div style="width: 15%;">
+                                <?php render_stat_block('Afkir / Kg', $latest_afkir, '#dc3545'); ?>
+                            </div>
+                            <div id="legend-chartAfkir" class="chart-legend-container" style="flex-grow: 1;"></div>
+                        </div>
+                        
                         <div class="chart-container" style="height: 300px;">
                             <canvas id="chartAfkir"></canvas>
                         </div>
@@ -121,6 +151,36 @@ function render_stat_block($title, $data, $color) {
 .text-xs {
     font-size: 0.75rem;
 }
+.chart-legend-container ul {
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    justify-content: center; /* Ini akan menengahkan legend */
+}
+.chart-legend-container li {
+    display: flex;
+    align-items: center;
+    margin: 0 10px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: default; /* Ganti cursor jadi default (tidak bisa diklik) */
+}
+.chart-legend-container li span {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+/* Style "hidden" DIHAPUS agar tidak ada coretan */
+/*
+.chart-legend-container li.hidden {
+    text-decoration: line-through;
+    color: #aaa;
+}
+*/
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -129,9 +189,70 @@ document.addEventListener("DOMContentLoaded", function() {
 
     const formatRupiah = (value) => 'Rp ' + new Intl.NumberFormat('id-ID').format(value);
 
-    // Opsi Global untuk Tooltip dan Legend
+    // --- PLUGIN HTML Legend ---
+    const getOrCreateLegendList = (chart, id) => {
+        const legendContainer = document.getElementById(id);
+        if (!legendContainer) return null;
+        let listContainer = legendContainer.querySelector('ul');
+        if (!listContainer) {
+            listContainer = document.createElement('ul');
+            legendContainer.appendChild(listContainer);
+        }
+        return listContainer;
+    };
+
+    const htmlLegendPlugin = {
+        id: 'htmlLegend',
+        afterUpdate(chart, args, options) {
+            const ul = getOrCreateLegendList(chart, options.containerID);
+            if (!ul) return;
+            
+            ul.innerHTML = ''; 
+            const items = chart.options.plugins.legend.labels.generateLabels(chart);
+            
+            items.forEach(item => {
+                const li = document.createElement('li');
+                li.style.color = item.fontColor;
+                // Hapus toggle class 'hidden'
+                
+                // *** FUNGSI ONCLICK DIHAPUS/DI-KOMENTARI ***
+                /*
+                li.onclick = () => {
+                    const {type} = chart.config;
+                    if (type === 'pie' || type === 'doughnut') {
+                        chart.toggleDataVisibility(item.index);
+                    } else {
+                        chart.setDatasetVisibility(item.datasetIndex, !chart.isDatasetVisible(item.datasetIndex));
+                    }
+                    chart.update();
+                };
+                */
+                
+                const boxSpan = document.createElement('span');
+                boxSpan.style.background = item.fillStyle;
+                boxSpan.style.borderColor = item.strokeStyle;
+                boxSpan.style.borderWidth = item.lineWidth + 'px';
+                
+                const text = document.createTextNode(item.text);
+                
+                li.appendChild(boxSpan);
+                li.appendChild(text);
+                ul.appendChild(li);
+            });
+        }
+    };
+    // --- AKHIR PLUGIN ---
+
+
+    // Opsi Global (Tidak berubah)
     const chartGlobalOptions = {
         plugins: {
+            htmlLegend: {
+                // containerID akan diset di createMonthlyChart
+            },
+            legend: {
+                display: false
+            },
             tooltip: {
                 callbacks: {
                     label: context => {
@@ -146,16 +267,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 cornerRadius: 8,
                 titleFont: { size: 14, weight: 'bold' },
                 bodyFont: { size: 13 }
-            },
-            legend: {
-                position: 'top', 
-                align: 'end',
-                labels: {
-                    font: { size: 13, weight: 'bold' },
-                    padding: 20,
-                    usePointStyle: true,
-                    pointStyle: 'circle'
-                }
             }
         },
         scales: {
@@ -183,9 +294,9 @@ document.addEventListener("DOMContentLoaded", function() {
     };
 
     /**
-     * Helper Function BARU untuk membuat Grafik
+     * Helper Function (Tidak berubah)
      */
-    function createMonthlyChart(canvasId, chartJsonData) {
+    function createMonthlyChart(canvasId, legendContainerId, chartJsonData) {
         if (!document.getElementById(canvasId)) return;
         
         let chartData;
@@ -196,6 +307,9 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
 
+        let chartOptions = JSON.parse(JSON.stringify(chartGlobalOptions));
+        chartOptions.plugins.htmlLegend.containerID = legendContainerId;
+
         const ctx = document.getElementById(canvasId).getContext('2d');
         
         new Chart(ctx, {
@@ -204,37 +318,35 @@ document.addEventListener("DOMContentLoaded", function() {
                 labels: chartData.labels,
                 datasets: chartData.datasets
             },
-            options: chartGlobalOptions
+            options: chartOptions, 
+            plugins: [htmlLegendPlugin] 
         });
     }
 
-    // 1. Buat Grafik Telur Layer
+    // Panggilan Fungsi (Tidak berubah)
     createMonthlyChart(
         'chartTelurLayer',
+        'legend-chartTelurLayer',
         '<?php echo $chart_telur; ?>'
     );
-
-    // 2. Buat Grafik Telur Puyuh
     createMonthlyChart(
         'chartTelurPuyuh',
+        'legend-chartTelurPuyuh',
         '<?php echo $chart_puyuh; ?>'
     );
-
-    // 3. Buat Grafik Telur Bebek
     createMonthlyChart(
         'chartTelurBebek',
+        'legend-chartTelurBebek',
         '<?php echo $chart_bebek; ?>'
     );
-
-    // 4. Buat Grafik Live Bird
     createMonthlyChart(
         'chartLiveBird',
+        'legend-chartLiveBird',
         '<?php echo $chart_lb; ?>'
     );
-
-    // 5. Buat Grafik Afkir
     createMonthlyChart(
         'chartAfkir',
+        'legend-chartAfkir',
         '<?php echo $chart_afkir; ?>'
     );
 
