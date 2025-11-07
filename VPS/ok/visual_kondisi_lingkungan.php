@@ -91,46 +91,7 @@
                             </div>
                         </div>
                     </div>
- <div class="card-body bg-light">
-                <form action="<?= site_url('Dashboard_new/visual_kondisi_lingkungan') ?>" method="post">
-                    <div class="row">
-                                                                                                                        </div>                     
-                                                                <div class="row mt-4">
-                                                <div class="col-lg-6 mb-4">
-                            <div class="card shadow-sm border-0 h-100">
-                                <div class="card-header bg-white">
-                                    <h5 class="mb-0 font-weight-bold">
-                                        <i class="fas fa-thermometer-half text-danger mr-2"></i>Rata-rata Suhu Kandang
-                                    </h5>
-                                    <small class="text-muted">Rata-rata suhu (°C) bulanan berdasarkan filter</small>
-                                </div>
-                                <div class="card-body">
-                                    <div style="height: 300px; position: relative;">
-                                        <canvas id="chartSuhu"></canvas>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                                                <div class="col-lg-6 mb-4">
-                            <div class="card shadow-sm border-0 h-100">
-                                <div class="card-header bg-white">
-                                    <h5 class="mb-0 font-weight-bold">
-                                        <i class="fas fa-tint text-primary mr-2"></i>Rata-rata Kelembapan Kandang
-                                    </h5>
-                                    <small class="text-muted">Rata-rata kelembapan (%) bulanan berdasarkan filter</small>
-                                </div>
-                                <div class="card-body">
-                                    <div style="height: 300px; position: relative;">
-                                        <canvas id="chartKelembapan"></canvas>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                                                            <div class="row mt-3">
-                                            </div>
-                </form>             </div>
-        </div>                   
+                    
                     
                 </form>
             </div>
